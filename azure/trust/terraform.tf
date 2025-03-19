@@ -1,10 +1,10 @@
 terraform {
 
   cloud {
-    organization = "Mccain_Foods"
+    organization = "SivajiRaavi"
 
     workspaces {
-      name = "Development"
+      name = "Production"
     }
   }
 
