@@ -1,12 +1,12 @@
 terraform {
 
-  cloud {
-    organization = "SivajiRaavi"
+  /*   cloud {
+    organization = "Mccain_Foods"
 
     workspaces {
-      name = "Production"
+      name = "Development"
     }
-  }
+  } */
 
   required_providers {
     azurerm = {
