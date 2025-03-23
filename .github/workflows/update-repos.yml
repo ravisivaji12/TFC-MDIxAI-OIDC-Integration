@@ -1,0 +1,37 @@
+name: Update GitHub Repositories
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_repos:
+        description: "New repositories to add (comma-separated)"
+        required: true
+        type: string
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install jq (for JSON parsing)
+        run: sudo apt-get install -y jq
+
+      - name: Validate Repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/validate_repos.sh
+          MISSING_REPOS=$(./scripts/validate_repos.sh "${{ inputs.new_repos }}")
+          echo "MISSING_REPOS=${MISSING_REPOS}" >> "$GITHUB_ENV"
+
+      - name: Debug MISSING_REPOS
+        run: echo "Repositories to be created:'$MISSING_REPOS'"
+
+      - name: Update Terraform File
+        if: env.MISSING_REPOS != ''
+        run: |
+          chmod +x scripts/update_repos.sh
+          ./scripts/update_repos.sh "$MISSING_REPOS"
+
