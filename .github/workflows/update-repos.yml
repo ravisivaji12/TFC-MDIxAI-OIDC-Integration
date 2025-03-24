@@ -20,7 +20,7 @@ jobs:
 
       - name: Validate Repositories
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         run: |
           chmod +x scripts/validate_repos.sh
           MISSING_REPOS=$(./scripts/validate_repos.sh "${{ inputs.new_repos }}")
