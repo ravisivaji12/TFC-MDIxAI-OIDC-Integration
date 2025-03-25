@@ -27,3 +27,31 @@ variable "tfc_workspace_name" {
   default     = "Production"
   description = "The name of the workspace that you'd like to create and connect to Azure"
 }
+
+variable "tfc_configs" {
+  description = "Set of configurations for Terraform Cloud workspaces"
+  type = set(object({
+    app_name          = string
+    organization_name = string
+    project_name      = string
+    workspace_name    = string
+  }))
+  default = [{
+    app_name          = "tfc_application-dev"
+    organization_name = "SivajiRaavi"
+    project_name      = "my-project"
+    workspace_name    = "dev"
+    },
+    {
+      app_name          = "tfc_application-prod"
+      organization_name = "SivajiRaavi"
+      project_name      = "my-project"
+      workspace_name    = "prod"
+    },
+    {
+      app_name          = "tfc_application-staging"
+      organization_name = "SivajiRaavi"
+      project_name      = "my-project"
+      workspace_name    = "staging"
+  }]
+}
