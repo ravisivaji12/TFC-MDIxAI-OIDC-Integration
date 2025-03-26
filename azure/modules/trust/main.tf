@@ -3,7 +3,7 @@ provider "azurerm" {
   features {}
 }
 
-provider "azuread" {}
+# provider "azuread" {}
 
 data "azurerm_subscription" "current" {}
 

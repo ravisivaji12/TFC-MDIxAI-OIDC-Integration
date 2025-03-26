@@ -1,4 +1,4 @@
-
+provider "azuread" {}
 
 module "githubrepo" {
   source          = "./modules/githubrepo"
@@ -18,8 +18,8 @@ module "githubrepo" {
 # }
 
 module "azuretrust" {
-    source = "./modules/trust"
-  
+  source = "./modules/trust"
+
 }
 
 /* module "tfeprovider" {
@@ -30,3 +30,11 @@ module "azuretrust" {
     tfe_configs = var.tfe_configs
   
 } */
+
+module "tfeprovider" {
+  source                     = "./modules/tfeprovider"
+  workspaces                 = var.workspaces
+  tfe_token                  = var.tfe_token
+  github_app_installation_id = var.github_app_installation_id
+  organization               = var.organization
+}
