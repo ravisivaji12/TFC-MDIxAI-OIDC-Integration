@@ -20,10 +20,10 @@ jobs:
 
       - name: Validate Repositories
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
         run: |
-          chmod +x scripts/validate_repos.sh
-          MISSING_REPOS=$(./scripts/validate_repos.sh "${{ inputs.new_repos }}")
+          chmod +x azure/modules/githubrepo/validate_repos.sh
+          MISSING_REPOS=$(./azure/modules/githubrepo/validate_repos.sh "${{ inputs.new_repos }}")
           echo "MISSING_REPOS=${MISSING_REPOS}" >> "$GITHUB_ENV"
 
       - name: Debug MISSING_REPOS
@@ -32,6 +32,6 @@ jobs:
       - name: Update Terraform File
         if: env.MISSING_REPOS != ''
         run: |
-          chmod +x scripts/update_repos.sh
-          ./scripts/update_repos.sh "$MISSING_REPOS"
+          chmod +x azure/modules/githubrepo/update_repos.sh
+          ./azure/modules/githubrepo/update_repos.sh "$MISSING_REPOS"
 
