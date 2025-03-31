@@ -4,7 +4,7 @@ variable "github_token" {
   sensitive   = true
 }
 
-variable "org_name" {
+variable "github_organization" {
   description = "GitHub Organization Name"
   type        = string
   default     = "ravisivaji12"

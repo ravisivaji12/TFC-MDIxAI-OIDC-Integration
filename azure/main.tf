@@ -4,7 +4,7 @@ module "githubrepo" {
   source          = "./modules/githubrepo"
   new_repo_name   = ["repo1", "repo2", "repo3"]
   repo_visibility = "private"
-  org_name        = "my-org"
+  github_organization        = "my-org"
   template_repo   = "template-repo"
   github_token    = var.github_token
 }

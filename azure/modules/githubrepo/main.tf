@@ -4,7 +4,7 @@ resource "github_repository" "new_repo" {
   description = "This Repository: ${each.value} for MDIxAI platform has been created and managed using Terraform"
   visibility  = var.repo_visibility
   template {
-    owner      = var.org_name
+    owner      = var.github_organization
     repository = var.template_repo
   }
   has_issues         = true
