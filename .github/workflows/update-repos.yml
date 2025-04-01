@@ -35,6 +35,6 @@ jobs:
       - name: Update Terraform File
         if: env.MISSING_REPOS != ''
         run: |
-          chmod +x azure/modules/githubrepo/update_repos.sh
-          ./azure/modules/githubrepo/update_repos.sh "$MISSING_REPOS"
+          chmod +x azure/modules/githubrepo/update_variables.sh
+          ./azure/modules/githubrepo/update_variables.sh "$MISSING_REPOS"
 
