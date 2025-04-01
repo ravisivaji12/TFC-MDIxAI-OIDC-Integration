@@ -5,7 +5,7 @@
 TF_FILE="./azure/modules/githubrepo/variables.tf"
 
 # Backup the original file
-cp "$TF_FILE" "${TF_FILE}.bak"
+# cp "$TF_FILE" "${TF_FILE}.bak"
 
 # Function to update a Terraform list variable
 update_tf_variable() {
