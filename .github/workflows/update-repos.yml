@@ -7,7 +7,10 @@ on:
         description: "New repositories to add (comma-separated)"
         required: true
         type: string
-
+        
+permissions:
+  contents: write  # Ensure GitHub Actions has write access to the repository
+  
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
