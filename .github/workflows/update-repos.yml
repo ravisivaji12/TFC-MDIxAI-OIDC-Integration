@@ -33,5 +33,5 @@ jobs:
         if: env.MISSING_REPOS != ''
         run: |
           chmod +x azure/modules/githubrepo/update_variables.sh
-          ./azure/modules/githubrepo/update_variables.sh "${MISSING_REPOS//,/ }"
+          ./azure/modules/githubrepo/update_variables.sh new_repo_name "${MISSING_REPOS//,/ }"
 
