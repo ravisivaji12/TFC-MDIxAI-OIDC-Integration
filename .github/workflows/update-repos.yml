@@ -25,10 +25,7 @@ jobs:
         run: |
           chmod +x azure/modules/githubrepo/validate_repos.sh
           MISSING_REPOS=$(./azure/modules/githubrepo/validate_repos.sh "${{ inputs.new_repos }}")
-          echo "MISSING_REPOS<<EOF" >> $GITHUB_ENV
-          echo "$MISSING_REPOS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
+          
       - name: Debug MISSING_REPOS
         run: echo "Repositories to be created:'$MISSING_REPOS'"
 
