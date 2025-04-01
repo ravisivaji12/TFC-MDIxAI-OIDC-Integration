@@ -1,14 +1,19 @@
 #!/bin/bash
 
 # Usage: ./update_variables.sh repo_list "repo-three,repo-four" team_list "team-gamma" project_list "project-z"
+echo "Received arguments: $@"
 
 TF_FILE="./azure/modules/githubrepo/variables.tf"
 BACKUP_FILE="${TF_FILE}.bak"
+
+echo "Received arguments: $@"
 
 # Backup the original file if not already backed up
 if [ ! -f "$BACKUP_FILE" ]; then
     cp "$TF_FILE" "$BACKUP_FILE"
 fi
+
+echo "Received arguments: $@"
 
 # Function to update a Terraform list variable
 update_tf_variable() {
