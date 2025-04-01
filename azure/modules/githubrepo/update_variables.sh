@@ -21,16 +21,9 @@ update_tf_variable() {
     NEW_VALUES=$2
 
     CURRENT_VALUES=$(awk -v var="$VAR_NAME" '
-        $0 ~ "variable[[:space:]]*\"" var "\"[[:space:]]*{" {found=1}
-        found && /default[[:space:]]*=/ {
-            match($0, /\[([^\]]*)\]/, arr);
-            print arr[1];
-            found=0
-        }
+        $0 ~ "variable \"" var "\" *{" {found=1}
+        found && /default *= *\[/ {sub(/.*default *= *\[/, ""); sub(/\].*/, ""); print; found=0}
     ' "$TF_FILE")
-    
-    # If empty, set default to empty array
-    CURRENT_VALUES="${CURRENT_VALUES:-}"
 
     # Convert the current values to an array (removing quotes)
     IFS=',' read -r -a CURRENT_ARRAY <<< "$(echo $CURRENT_VALUES | tr -d '"')"
