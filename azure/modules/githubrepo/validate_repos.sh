@@ -36,9 +36,9 @@ done
 # Print missing repos as a comma-separated string
 if [ ${#MISSING_REPOS[@]} -ne 0 ]; then
    MISSING_REPOS_STR=$(IFS=','; echo "${MISSING_REPOS[*]}")
-   echo "MISSING_REPOS=$MISSING_REPOS_STR" >> '$GITHUB_ENV'
+   echo "MISSING_REPOS=$MISSING_REPOS_STR" >> $GITHUB_ENV
    echo "$MISSING_REPOS_STR"
 else
-   echo "MISSING_REPOS=" >> '$GITHUB_ENV'
+   echo "MISSING_REPOS=" >> $GITHUB_ENV
    echo ""
 fi
