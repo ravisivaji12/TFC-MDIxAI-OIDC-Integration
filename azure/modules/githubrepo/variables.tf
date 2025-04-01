@@ -19,6 +19,7 @@ variable "template_repo" {
 variable "new_repo_name" {
   description = "Name of the new repository"
   type        = list(string)
+  default     = []
 }
 
 variable "repo_visibility" {
