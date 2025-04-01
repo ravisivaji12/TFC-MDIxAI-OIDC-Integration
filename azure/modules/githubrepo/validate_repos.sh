@@ -3,7 +3,7 @@
 # GitHub Organization or Username
 GITHUB_ORG="ravisivaji12"
 
-# GitHub token from environment variables (ensure it's set)
+# GitHub token from environment variables
 GITHUB_TOKEN=${GITHUB_TOKEN:?Missing GitHub Token}
 
 # Function to check if a repo exists
@@ -20,7 +20,7 @@ repo_exists() {
   fi
 }
 
-# Process new repos from input
+# Read input repositories (comma-separated)
 IFS=',' read -r -a NEW_REPOS <<< "$1"
 
 MISSING_REPOS=()
@@ -34,12 +34,10 @@ for REPO in "${NEW_REPOS[@]}"; do
   fi
 done
 
-# Print missing repos as a comma-separated string
+# Convert array to comma-separated string
 if [ ${#MISSING_REPOS[@]} -ne 0 ]; then
-   MISSING_REPOS_STR=$(IFS=','; echo "${MISSING_REPOS[*]}")
-   echo "MISSING_REPOS=$MISSING_REPOS_STR" >> $GITHUB_ENV
-   echo "$MISSING_REPOS_STR"
+    MISSING_REPOS_STR=$(IFS=','; echo "${MISSING_REPOS[*]}")
+    echo "MISSING_REPOS=$MISSING_REPOS_STR" | tee -a "$GITHUB_ENV"
 else
-   echo "MISSING_REPOS=" >> $GITHUB_ENV
-   echo ""
+    echo "MISSING_REPOS=" | tee -a "$GITHUB_ENV"
 fi
