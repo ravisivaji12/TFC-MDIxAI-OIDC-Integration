@@ -3,19 +3,20 @@
 # GitHub Organization or Username
 GITHUB_ORG="ravisivaji12"
 
-# GitHub token from environment variables
+# GitHub token from environment variables (ensure it's set)
 GITHUB_TOKEN=${GITHUB_TOKEN:?Missing GitHub Token}
 
 # Function to check if a repo exists
 repo_exists() {
   REPO_NAME=$1
-  RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" \
+  RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
     "https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME")
+  HTTP_STATUS=$(echo "$RESPONSE" | jq -r .message)
 
-  if [[ "$RESPONSE" == "200" ]]; then
-    return 0  # Repo exists
-  else
+  if [[ "$HTTP_STATUS" == "Not Found" ]]; then
     return 1  # Repo does not exist
+  else
+    return 0  # Repo exists
   fi
 }
 
