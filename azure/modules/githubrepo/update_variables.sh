@@ -44,7 +44,7 @@ update_tf_variable() {
         [[ -n "$ITEM" ]] && UNIQUE_VALUES["$ITEM"]=1
     done
 
-    # Construct the final Terraform list
+    # Construct the final Terraform list **with quotes and commas**
     UPDATED_VALUES="["
     for KEY in "${!UNIQUE_VALUES[@]}"; do
         UPDATED_VALUES+=" \"$KEY\","
