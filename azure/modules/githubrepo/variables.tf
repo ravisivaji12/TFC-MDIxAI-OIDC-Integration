@@ -21,3 +21,9 @@ variable "new_repo_name" {
   type        = list(string)
   default = [ "TFC-MDIxAI-REPO-SIX", "TFC-MDIxAI-REPO-FIVE" ]
 }
+
+variable "repo_visibility" {
+  description = "Visibility of the repository (private/public)"
+  type        = string
+  default     = "public"
+}
