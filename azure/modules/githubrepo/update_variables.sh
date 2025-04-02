@@ -12,38 +12,49 @@ update_tf_variable() {
     VAR_NAME=$1
     NEW_VALUES=$2
 
-    # Extract current values, removing unnecessary spaces and new lines
+    # Extract the current list of values
     CURRENT_VALUES=$(awk -v var="$VAR_NAME" '
         $0 ~ "variable \"" var "\" *{" {found=1}
         found && /default *= *\[/ {inside=1; sub(/.*default *= *\[/, ""); print}
         inside && /\]/ {inside=0; sub(/\].*/, ""); print}
         inside && !/\]/ {print}
-    ' "$TF_FILE" | tr -d ' \n' | tr -d '[]"')
+    ' "$TF_FILE" | tr -d '[]"')
 
-    # Debugging: Check extracted values
-    echo "Current Values for $VAR_NAME: $CURRENT_VALUES"
+    # Debug: Show extracted values
+    echo "Current values for $VAR_NAME: $CURRENT_VALUES"
 
-    # Convert the current values into an array
+    # Convert to an array (ensure no empty elements)
     IFS=',' read -r -a CURRENT_ARRAY <<< "$CURRENT_VALUES"
 
     # Convert new values into an array
     IFS=',' read -r -a NEW_ARRAY <<< "$NEW_VALUES"
 
-    # Add new values only if they don’t already exist
-    for ITEM in "${NEW_ARRAY[@]}"; do
-        if [[ ! " ${CURRENT_ARRAY[@]} " =~ " ${ITEM} " ]]; then
-            CURRENT_ARRAY+=("$ITEM")
-        fi
+    # Use an associative array to track unique values
+    declare -A UNIQUE_VALUES
+
+    # Add current values to the associative array
+    for ITEM in "${CURRENT_ARRAY[@]}"; do
+        ITEM=$(echo "$ITEM" | xargs)  # Trim whitespace
+        [[ -n "$ITEM" ]] && UNIQUE_VALUES["$ITEM"]=1
     done
 
-    # Construct the correct Terraform list format
-    UPDATED_VALUES=$(printf ', "%s"' "${CURRENT_ARRAY[@]}")
-    UPDATED_VALUES="[${UPDATED_VALUES:2}]" # Remove leading ", "
+    # Add new values, ensuring uniqueness
+    for ITEM in "${NEW_ARRAY[@]}"; do
+        ITEM=$(echo "$ITEM" | xargs)  # Trim whitespace
+        [[ -n "$ITEM" ]] && UNIQUE_VALUES["$ITEM"]=1
+    done
 
-    # Debugging: Print the final values before updating
-    echo "Updated Values for $VAR_NAME: $UPDATED_VALUES"
+    # Construct the final Terraform list
+    UPDATED_VALUES="["
+    for KEY in "${!UNIQUE_VALUES[@]}"; do
+        UPDATED_VALUES+=" \"$KEY\","
+    done
+    UPDATED_VALUES="${UPDATED_VALUES%,} ]"  # Remove trailing comma and close bracket
 
-    # Use awk to update variables.tf
+    # Debug: Show final formatted list before updating
+    echo "Updated values for $VAR_NAME: $UPDATED_VALUES"
+
+    # Replace the default list in variables.tf
     awk -v var="$VAR_NAME" -v new_values="$UPDATED_VALUES" '
         $0 ~ "variable \"" var "\" *{" {found=1}
         found && /default *= *\[/ {inside=1; print "  default = " new_values; next}
@@ -53,12 +64,12 @@ update_tf_variable() {
     ' "$TF_FILE" > temp.tf && mv temp.tf "$TF_FILE"
 }
 
-# Loop through the provided arguments (key-value pairs)
+# Loop through arguments (key-value pairs)
 while [[ $# -gt 0 ]]; do
     VAR_NAME=$1
     NEW_VALUES=$2
     update_tf_variable "$VAR_NAME" "$NEW_VALUES"
-    shift 2  # Move to the next key-value pair
+    shift 2
 done
 
 echo "Updated variables.tf:"
