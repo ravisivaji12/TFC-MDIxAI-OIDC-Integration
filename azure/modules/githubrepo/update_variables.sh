@@ -12,39 +12,68 @@ update_tf_variable() {
     VAR_NAME=$1
     NEW_VALUES=$2
 
-    # Read the full Terraform file and preserve all content
-    awk -v var="$VAR_NAME" -v new_values="$NEW_VALUES" '
-        BEGIN { inside=0; found=0; buffer="" }
+    # Extract the current list of values
+    CURRENT_VALUES=$(awk -v var="$VAR_NAME" '
+        $0 ~ "variable \"" var "\" *{" {found=1}
+        found && /default *= *\[/ {inside=1; sub(/.*default *= *\[/, ""); print}
+        inside && /\]/ {inside=0; sub(/\].*/, ""); print}
+        inside && !/\]/ {print}
+    ' "$TF_FILE" | tr -d '[]"')
+
+    # Debug: Show extracted values
+    echo "Current values for $VAR_NAME: $CURRENT_VALUES"
+
+    # Convert to an array (ensure no empty elements)
+    IFS=',' read -r -a CURRENT_ARRAY <<< "$CURRENT_VALUES"
+
+    # Convert new values into an array
+    IFS=',' read -r -a NEW_ARRAY <<< "$NEW_VALUES"
+
+    # Use an associative array to track unique values
+    declare -A UNIQUE_VALUES
+
+    # Add current values to the associative array
+    for ITEM in "${CURRENT_ARRAY[@]}"; do
+        ITEM=$(echo "$ITEM" | xargs)  # Trim whitespace
+        [[ -n "$ITEM" ]] && UNIQUE_VALUES["$ITEM"]=1
+    done
+
+    # Add new values, ensuring uniqueness
+    for ITEM in "${NEW_ARRAY[@]}"; do
+        ITEM=$(echo "$ITEM" | xargs)  # Trim whitespace
+        [[ -n "$ITEM" ]] && UNIQUE_VALUES["$ITEM"]=1
+    done
+
+    # Construct the final Terraform list **with quotes and commas**
+    UPDATED_VALUES="["
+    for KEY in "${!UNIQUE_VALUES[@]}"; do
+        UPDATED_VALUES+=" \"$KEY\","
+    done
+    UPDATED_VALUES="${UPDATED_VALUES%,} ]"  # Remove trailing comma and close bracket
+
+    # Debug: Show final formatted list before updating
+    echo "Updated values for $VAR_NAME: $UPDATED_VALUES"
+
+    # Preserve file structure and update only the target variable
+    awk -v var="$VAR_NAME" -v new_values="$UPDATED_VALUES" '
+        BEGIN { inside=0; found=0 }
         {
             if ($0 ~ "variable \"" var "\" *{") {
                 found=1
             }
             if (found && /default *= *\[/) {
                 inside=1
-                buffer = buffer "  default = ["
+                print "  default = " new_values
+                next
+            }
+            if (inside && /\]/) {
+                inside=0
                 next
             }
             if (inside) {
-                if ($0 ~ /\]/) {
-                    inside=0
-                    next
-                }
                 next
             }
-            buffer = buffer "\n" $0
-        }
-        END {
-            # Convert new values to a properly formatted Terraform list
-            split(new_values, new_array, ",")
-            updated_list="["
-            for (i in new_array) {
-                updated_list = updated_list "\"" new_array[i] "\","
-            }
-            updated_list = substr(updated_list, 1, length(updated_list)-1) "]"  # Remove last comma
-            
-            # Replace the target variable default value
-            gsub(/\[\]/, updated_list, buffer)
-            print buffer
+            print
         }
     ' "$TF_FILE" > temp.tf && mv temp.tf "$TF_FILE"
 }
