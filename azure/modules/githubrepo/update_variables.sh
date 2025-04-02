@@ -2,7 +2,7 @@
 
 # Usage: ./update_variables.sh repo_list "repo-three,repo-four" team_list "team-gamma" project_list "project-z"
 
-TF_FILE="./azure/modules/githubrepo/variables.tf"
+TF_FILE="variables.tf"
 
 # Backup the original file
 cp "$TF_FILE" "${TF_FILE}.bak"
@@ -54,13 +54,27 @@ update_tf_variable() {
     # Debug: Show final formatted list before updating
     echo "Updated values for $VAR_NAME: $UPDATED_VALUES"
 
-    # Replace the default list in variables.tf
+    # Preserve file structure: Read file line by line and update in-place
     awk -v var="$VAR_NAME" -v new_values="$UPDATED_VALUES" '
-        $0 ~ "variable \"" var "\" *{" {found=1}
-        found && /default *= *\[/ {inside=1; print "  default = " new_values; next}
-        inside && /\]/ {inside=0; next}
-        inside && !/\]/ {next}
-        {print}
+        BEGIN { inside=0 }
+        {
+            if ($0 ~ "variable \"" var "\" *{") {
+                found=1
+            }
+            if (found && /default *= *\[/) {
+                inside=1
+                print "  default = " new_values
+                next
+            }
+            if (inside && /\]/) {
+                inside=0
+                next
+            }
+            if (inside) {
+                next
+            }
+            print
+        }
     ' "$TF_FILE" > temp.tf && mv temp.tf "$TF_FILE"
 }
 
