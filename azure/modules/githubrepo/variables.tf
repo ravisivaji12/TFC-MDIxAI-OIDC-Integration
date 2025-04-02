@@ -19,4 +19,4 @@ variable "template_repo" {
 variable "new_repo_name" {
   description = "Name of the new repository"
   type        = list(string)
-  default = [ "TFC-MDIxAI-REPO-THREE", "Repo-ten" ]
+  default = [ "repo-nine Repo-six", "TFC-MDIxAI-REPO-THREE", "Repo-ten" ]
