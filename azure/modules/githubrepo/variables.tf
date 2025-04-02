@@ -16,4 +16,10 @@ variable "template_repo" {
 variable "new_repo_name" {
   description = "Name of the new repository"
   type        = list(string)
-  default = [ "SSSSSSSSRRRRRRR" ]
+  default = []
+}
+variable "repo_visibility" {
+  description = "Visibility of the repository (private/public)"
+  type        = string
+  default     = "public"
+}
