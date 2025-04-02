@@ -19,11 +19,4 @@ variable "template_repo" {
 variable "new_repo_name" {
   description = "Name of the new repository"
   type        = list(string)
-  default = ["TFC-MDIxAI-REPO-THREE"]
-}
-
-variable "repo_visibility" {
-  description = "Visibility of the repository (private/public)"
-  type        = string
-  default     = "public"
-}
+  default = ["TFC-MDIxAI-REPO-THREE]TFC-MDIxAI-REPO-THREE", "TFC-MDIxAI-REPO-THREE"]
