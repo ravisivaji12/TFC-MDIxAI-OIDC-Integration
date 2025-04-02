@@ -2,7 +2,7 @@
 
 # Usage: ./update_variables.sh repo_list "repo-three,repo-four" team_list "team-gamma" project_list "project-z"
 
-TF_FILE="./azure/modules/githubrepo/variables.tf"
+TF_FILE="variables.tf"
 
 # Backup the original file
 cp "$TF_FILE" "${TF_FILE}.bak"
@@ -54,9 +54,9 @@ update_tf_variable() {
     # Debug: Show final formatted list before updating
     echo "Updated values for $VAR_NAME: $UPDATED_VALUES"
 
-    # Preserve file structure: Read file line by line and update in-place
+    # Preserve file structure and update only the target variable
     awk -v var="$VAR_NAME" -v new_values="$UPDATED_VALUES" '
-        BEGIN { inside=0 }
+        BEGIN { inside=0; found=0 }
         {
             if ($0 ~ "variable \"" var "\" *{") {
                 found=1
