@@ -2,7 +2,7 @@
 
 # Usage: ./update_variables.sh repo_list "repo-three,repo-four" team_list "team-gamma" project_list "project-z"
 
-TF_FILE="variables.tf"
+TF_FILE="./azure/modules/githubrepo/variables.tf"
 
 # Backup the original file
 cp "$TF_FILE" "${TF_FILE}.bak"
