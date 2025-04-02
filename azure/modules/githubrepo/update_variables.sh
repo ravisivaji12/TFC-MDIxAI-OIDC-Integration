@@ -2,7 +2,7 @@
 
 # Usage: ./update_variables.sh repo_list "repo-three,repo-four" team_list "team-gamma" project_list "project-z"
 
-TF_FILE="./azure/modules/githubrepo/variables.tf"
+TF_FILE="variables.tf"
 
 # Backup the original file
 cp "$TF_FILE" "${TF_FILE}.bak"
@@ -12,7 +12,7 @@ update_tf_variable() {
     VAR_NAME=$1
     NEW_VALUES=$2
 
-    # Extract the current list of values
+    # Extract the current list of values, ensuring we handle multi-line lists properly
     CURRENT_VALUES=$(awk -v var="$VAR_NAME" '
         $0 ~ "variable \"" var "\" *{" {found=1}
         found && /default *= *\[/ {inside=1; sub(/.*default *= *\[/, ""); print}
@@ -20,10 +20,13 @@ update_tf_variable() {
         inside && !/\]/ {print}
     ' "$TF_FILE" | tr -d ' \n' | tr -d '"')
 
-    # Convert current values to an array
+    # Remove any potential leading/trailing commas or spaces
+    CURRENT_VALUES=$(echo "$CURRENT_VALUES" | sed 's/^,*//;s/,*$//')
+
+    # Convert the current values into an array
     IFS=',' read -r -a CURRENT_ARRAY <<< "$CURRENT_VALUES"
 
-    # Convert new values to an array
+    # Convert new values (comma-separated) into an array
     IFS=',' read -r -a NEW_ARRAY <<< "$NEW_VALUES"
 
     # Add new values only if they don’t already exist
@@ -33,9 +36,13 @@ update_tf_variable() {
         fi
     done
 
-    # Convert updated array back to Terraform format
+    # Construct the correct Terraform list format
     UPDATED_VALUES=$(printf ', "%s"' "${CURRENT_ARRAY[@]}")
     UPDATED_VALUES="[${UPDATED_VALUES:2}]" # Remove leading ", "
+
+    # Debugging: Print values before applying the update
+    echo "Updating variable: $VAR_NAME"
+    echo "New Default Value: $UPDATED_VALUES"
 
     # Use `awk` to replace the default list with the updated one
     awk -v var="$VAR_NAME" -v new_values="$UPDATED_VALUES" '
