@@ -9,11 +9,14 @@ CONTENT=$(cat "$FILE_PATH")
 echo "$CONTENT"
 cat "$FILE_PATH"
 
-# Improved regex to match list variables correctly
-PATTERN="variable \"$VARIABLE_NAME\"[[:space:]]*\{[[:space:]]*[^}]*default[[:space:]]*=[[:space:]]*\[([^\]]*)\]"
+# Improved regex pattern to handle various formats
+PATTERN='variable[[:space:]]+"'"$VARIABLE_NAME"'"[[:space:]]*\{([^}]*)default[[:space:]]*=[[:space:]]*\[([^]]*)\]'
 if [[ ! $CONTENT =~ $PATTERN ]]; then
-    echo "Variable '$VARIABLE_NAME' not found in the file."
-    grep "$VARIABLE_NAME" "$FILE_PATH"
+    echo "Variable '$VARIABLE_NAME' not found in the file. Checking for alternatives..."
+    
+    # Debugging: Print all variables found
+    grep -E "variable[[:space:]]+\"" "$FILE_PATH"
+
     exit 1
 fi
 
