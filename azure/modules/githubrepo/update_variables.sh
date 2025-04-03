@@ -19,7 +19,7 @@ update_tf_variable() {
     ' "$TF_FILE")
 
     # Convert the current values to an array (removing quotes)
-    IFS=',' read -r -a CURRENT_ARRAY <<< "$(echo $CURRENT_VALUES | tr -d '"')"
+    IFS=',' read -r -a CURRENT_ARRAY <<< "$(echo "$CURRENT_VALUES" | tr -d '"' | tr -s ' ')"
 
     # Convert new values (comma-separated) into an array
     IFS=',' read -r -a NEW_ARRAY <<< "$NEW_VALUES"
