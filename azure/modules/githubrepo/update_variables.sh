@@ -2,7 +2,7 @@
 
 # Usage: ./update_variables.sh repo_list "repo-three,repo-four" team_list "team-gamma" project_list "project-z"
 
-TF_FILE="./azure/modules/githubrepo/variables.tf"
+TF_FILE="variables.tf"
 
 # Backup the original file
 cp "$TF_FILE" "${TF_FILE}.bak"
@@ -19,7 +19,7 @@ update_tf_variable() {
     ' "$TF_FILE")
 
     # Convert the current values to an array (removing quotes)
-    IFS=',' read -r -a CURRENT_ARRAY <<< "$(echo "$CURRENT_VALUES" | tr -d '"' | tr -s ' ')"
+    IFS=',' read -r -a CURRENT_ARRAY <<< "$(echo $CURRENT_VALUES | tr -d '"')"
 
     # Convert new values (comma-separated) into an array
     IFS=',' read -r -a NEW_ARRAY <<< "$NEW_VALUES"
