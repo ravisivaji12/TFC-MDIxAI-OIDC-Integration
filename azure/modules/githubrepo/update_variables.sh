@@ -10,7 +10,8 @@ echo "$CONTENT"
 cat "$FILE_PATH"
 
 # Improved regex pattern to handle various formats
-PATTERN='variable[[:space:]]+"'"$VARIABLE_NAME"'"[[:space:]]*\{([^}]*)default[[:space:]]*=[[:space:]]*\[([^]]*)\]'
+PATTERN="(variable[[:space:]]+\"$VARIABLE_NAME\"[[:space:]]*\{[^\}]*default[[:space:]]*=[[:space:]]*)\[(.*)\]"
+
 if [[ ! $CONTENT =~ $PATTERN ]]; then
     echo "Variable '$VARIABLE_NAME' not found in the file. Checking for alternatives..."
     
