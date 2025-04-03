@@ -2,7 +2,7 @@
 
 VARIABLE_NAME="$1"
 NEW_VALUES="$2"
-FILE_PATH="variables.tf"
+FILE_PATH="./azure/modules/githubrepo/variables.tf"
 
 # Read the file content
 CONTENT=$(cat "$FILE_PATH")
