@@ -7,6 +7,8 @@ FILE_PATH="./azure/modules/githubrepo/variables.tf"
 # Read the file content
 CONTENT=$(cat "$FILE_PATH")
 
+cat "$TF_FILE"
+
 # Improved regex to match list variables correctly
 PATTERN="variable \"$VARIABLE_NAME\"[[:space:]]*\{[[:space:]]*[^}]*default[[:space:]]*=[[:space:]]*\[([^\]]*)\]"
 if [[ ! $CONTENT =~ $PATTERN ]]; then
