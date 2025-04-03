@@ -37,6 +37,11 @@ done
 UPDATED_LIST=${UPDATED_LIST%,}  # Remove trailing comma
 UPDATED_LIST+="\n]"
 
+# Debugging: Print values before updating
+echo "Existing values: ${EXISTING_VALUES[@]}"
+echo "New values: ${NEW_VALUES_ARRAY[@]}"
+echo "Updated list: $UPDATED_LIST"
+
 # Replace the existing list with the updated list
 UPDATED_CONTENT=$(echo "$CONTENT" | sed -E "s|($PATTERN)|variable \"$VARIABLE_NAME\" {\n  default = $UPDATED_LIST\n}|")
 
