@@ -13,6 +13,7 @@ cat "$FILE_PATH"
 PATTERN="variable \"$VARIABLE_NAME\"[[:space:]]*\{[[:space:]]*[^}]*default[[:space:]]*=[[:space:]]*\[([^\]]*)\]"
 if [[ ! $CONTENT =~ $PATTERN ]]; then
     echo "Variable '$VARIABLE_NAME' not found in the file."
+    grep "$VARIABLE_NAME" "$FILE_PATH"
     exit 1
 fi
 
